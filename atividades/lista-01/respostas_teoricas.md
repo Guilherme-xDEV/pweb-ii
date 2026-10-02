@@ -45,6 +45,11 @@ Uma linguagem de tipagem fraca permite mais conversões implícitas entre tipos 
 ---
 `e) Como linguagens híbridas conseguem combinar características de tipagem estática e dinâmica? Qual o papel da inferência de tipos em linguagens de tipagem estática?`
 
+Uma linguagem pode permitir que algumas partes do programa tenham seus tipos verificados estaticamente, enquanto outras permitem maior flexibilidade e verificações em tempo de execução.
+O TypeScript, por exemplo, adiciona um sistema de tipos estáticos ao JavaScript, o compilador do TypeScript pode detectar incompatibilidade de tipos ao reatribuirmos uma variável com tipo diferente, porém o código pode ser mesmo assim compilado e convertido para JavaScript que tem tipagem dinâmica e permite essa operação.
+
+A inferência de tipos permite que linguagens estaticamente tipadas sejam menos verbosas sem abandonar a verificação estática. O kotlin, por exemplo permite escolher determinar ou não o tipo da variável:
+val nome: String = "João" ou val nome = "João"
 
 ---
 f) `Como a linguagem JavaScript lida com a tipagem de dados?`

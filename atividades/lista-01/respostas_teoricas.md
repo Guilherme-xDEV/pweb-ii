@@ -27,6 +27,9 @@ Segurança: Erros são identificados antes que o programa seja executado. Isso p
 ---
 `c) Como funciona a tipagem dinâmica em relação à verificação de tipos em tempo de execução? Quais são os principais desafios de performance enfrentados por linguagens de tipagem dinâmica?`
 
+Em uma linguagem de tipagem dinâmica, os tipos são determinados e verificados em terpo de execução do programa. A variável não possui necessariamente um tipo fixo, ela pode receber valores por diferentes tipos ao longo da execução.
+
+Alguns desafios podem atrapalhar na performance. A verificação em tempo de execução é o que mais pode atrapalhar, além disso, os tipos podem mudar devido a flexibilidade da linguagem, logo não seria correto assumir que uma variável permanecerá somente de um certo tipo. Engines modernas até possuem técnicas como o JIT para reduzir custos, tentando otimizar código.
 
 ---
 `d) Quais são as diferenças entre linguagens com tipagem forte e fraca?`

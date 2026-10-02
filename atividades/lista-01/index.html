@@ -31,49 +31,54 @@
 
 </head>
 <body>
-    <form>
+    <form id="form-questao-2-a">
 
         <p>Conversor real para dólar</p>
 
         <label for="questao-2-a">Questão 2 - A</label>
         <input type="number" id="questao-2-a" name="questao-2-a">
-        <button type="submit" onclick="document.getElementById('resultado-questao-2-a').innerHTML = converter_cotacao_reais(document.getElementById('questao-2-a').value)">Enviar</button>
+        <button type="submit">Enviar</button>
         <p id="resultado-questao-2-a"></p>
     </form>
 
     <br>
-    <form>
+    <form id="form-questao-2-b">
 
         <p>Cálculo de perímetro pelo raio</p>
 
         <label for="questao-2-b">Questão 2 - B</label>
         <input type="number" id="questao-2-b" name="questao-2-b">
-            <button type="submit" onclick="calcular_perimetro(document.getElementById('questao-2-b').value)">Enviar</button>
+        <button type="submit">Enviar</button>
         <p id="resultado-questao-2-b"></p>
     </form>
     
     <br>
-    <form>
+    <form id="form-questao-2-c">
 
         <p>Cálculo nota final</p>
 
         <label for="questao-2-c">Questão 2 - C</label>
         <input type="number" id="questao-2-c" name="questao-2-c">
         <input type="number" id="questao-2-c" name="questao-2-c">
-        <button type="submit" onclick="calcular_nota_final(document.getElementById('questao-2-c').value, document.getElementById('questao-2-c').value)">Enviar</button>
+        <button type="submit">Enviar</button>
         <p id="resultado-questao-2-c"></p>
     </form>
     
     <br>
-    <form>
+    <form id="form-questao-2-d">
 
         <p>soma de primos</p>
 
         <label for="questao-2-d">Questão 2 - D</label>
         <input type="number" id="questao-2-d" name="questao-2-d">
-        <button type="submit" onclick="validacao_primo(document.getElementById('questao-2-d').value)">Enviar</button>
+        <button type="submit">Enviar</button>
         <p id="resultado-questao-2-d"></p>
     </form>
     
+    <script src="questao-2-a.js"></script>
+    <script src="questao-2-b.js"></script>
+    <script src="questao-2-c.js"></script>
+    <script src="questao-2-d.js"></script>
+
 </body>
 </html>

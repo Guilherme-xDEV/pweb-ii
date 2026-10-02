@@ -53,3 +53,13 @@ val nome: String = "João" ou val nome = "João"
 
 ---
 f) `Como a linguagem JavaScript lida com a tipagem de dados?`
+
+O JavaScript utiliza tipagem dinâmica e também conversões implícitas entre determinados tipos. Isso significa que variável pode referenciar valores de tipos diferentes, ou seja o valor é que possui um tipo.
+
+portanto é válido:
+let valor = 10;
+valor = "dez";
+
+Os mecanismos de coerção permitem converter valores automaticamente então algo assim é valido:
+
+let a = 11 + "11" <-- retorna 1111

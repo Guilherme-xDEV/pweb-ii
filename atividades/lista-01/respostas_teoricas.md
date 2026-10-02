@@ -18,7 +18,11 @@ O JavaScript pelo contrário usa tipagem dinâmica!
 ---
 `b) Quais são os principais benefícios da tipagem estática em termos de performance e segurança?`
 
+Performance, Segurança e Detecção antecipada de erros são os principais benefícos da tipagem estática.
 
+performance: Os tipos são conhecidos durante compilação, logo o compilador pode realizar otimizações com mais informações sobre os dados que o programa usa.
+
+Segurança: Erros são identificados antes que o programa seja executado. Isso permite correção de incompatibilidade.
 
 ---
 `c) Como funciona a tipagem dinâmica em relação à verificação de tipos em tempo de execução? Quais são os principais desafios de performance enfrentados por linguagens de tipagem dinâmica?`

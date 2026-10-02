@@ -34,6 +34,13 @@ Alguns desafios podem atrapalhar na performance. A verificação em tempo de exe
 ---
 `d) Quais são as diferenças entre linguagens com tipagem forte e fraca?`
 
+tipagem Forte / Fraca : "quão permissiva é a linguagem ao misturar tipos diferentes e realizar conversões"
+
+resposta: A diferença está em como a linguagem trata valores de tipos diferentes quando eles são usados em uma mesma operação.
+
+Uma linguagem dita de tipagem forte tende a impedir operações entre tipos incompatíveis, ou exige conversão explícita.
+
+Uma linguagem de tipagem fraca permite mais conversões implícitas entre tipos distindos.
 
 ---
 `e) Como linguagens híbridas conseguem combinar características de tipagem estática e dinâmica? Qual o papel da inferência de tipos em linguagens de tipagem estática?`

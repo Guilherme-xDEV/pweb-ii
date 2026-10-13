@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Full Screen Menu</title>
+<style>
+  body { margin:0; font-family:sans-serif; }
+  
+  .hamburger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 30px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  .hamburger div {
+    width: 100%;
+    height: 4px;
+    background: #000;
+    margin: 6px 0;
+    transition: 0.4s;
+  }
+  .hamburger.active div:nth-child(1) { transform: rotate(45deg) translate(8px,8px); }
+  .hamburger.active div:nth-child(2) { opacity: 0; }
+  .hamburger.active div:nth-child(3) { transform: rotate(-45deg) translate(7px,-7px); }
+
+  .overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s, visibility 0.4s;
+    z-index: 999;
+  }
+  .overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .overlay a {
+    color: white;
+    font-size: 2.5rem;
+    text-decoration: none;
+    display: block;
+    margin: 20px 0;
+    transition: 0.3s;
+  }
+  .overlay a:hover { color: #ccc; transform: scale(1.1); }
+</style>
+</head>
+<body>
+
+<div class="hamburger" id="btn">
+  <div></div><div></div><div></div>
+</div>
+
+<div class="overlay" id="menu">
+  <div>
+    <a href="main.html">Página Principal</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
+    <a href="blog.html">Blog</a>
+  </div>
+</div>
+
+<script>
+  const btn = document.getElementById('btn');
+  const menu = document.getElementById('menu');
+
+  btn.onclick = () => {
+    btn.classList.toggle('active');
+    menu.classList.toggle('active');
+  };
+</script>
+
+</body>
+</html>

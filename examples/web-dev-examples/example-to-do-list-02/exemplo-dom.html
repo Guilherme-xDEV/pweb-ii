@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Exemplo de DOM - Lista de Tarefas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #1f3864;
+    }
+
+    .form-tarefa {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    #campo-tarefa {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    #btn-adicionar {
+      padding: 8px 16px;
+      background: #1f3864;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #lista-tarefas {
+      list-style: none;
+      padding: 0;
+    }
+
+    #lista-tarefas li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+    }
+
+    /* Classe aplicada via JavaScript quando a tarefa é concluída */
+    .concluida {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .btn-remover {
+      background: #c0392b;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    #contador {
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Minha Lista de Tarefas</h1>
+
+  <!-- Formulário simples: campo de texto + botão -->
+  <div class="form-tarefa">
+    <input type="text" id="campo-tarefa" placeholder="Digite uma nova tarefa...">
+    <button id="btn-adicionar">Adicionar</button>
+  </div>
+
+  <p id="contador">0 tarefa(s) pendente(s)</p>
+
+  <!-- Lista onde os itens serão inseridos dinamicamente -->
+  <ul id="lista-tarefas"></ul>
+
+  <script>
+    // ===== 1. SELEÇÃO DE ELEMENTOS =====
+    // Guardamos referências aos elementos que vamos usar repetidamente
+    const campo = document.getElementById("campo-tarefa");
+    const botaoAdicionar = document.getElementById("btn-adicionar");
+    const lista = document.getElementById("lista-tarefas");
+    const contador = document.getElementById("contador");
+
+    // ===== 2. FUNÇÃO PARA ATUALIZAR O CONTADOR =====
+    // Conta quantos <li> NÃO têm a classe "concluida"
+    function atualizarContador() {
+      const todasTarefas = lista.querySelectorAll("li");
+      const pendentes = lista.querySelectorAll("li:not(.concluida)");
+      contador.textContent = `${pendentes.length} tarefa(s) pendente(s) de ${todasTarefas.length} no total`;
+    }
+
+    // ===== 3. FUNÇÃO PARA CRIAR UM ITEM DE TAREFA =====
+    // Recebe o texto da tarefa e devolve um elemento <li> pronto,
+    // já com o texto e o botão de remover
+    function criarItemTarefa(texto) {
+      // Cria o <li> que vai conter tudo
+      const item = document.createElement("li");
+
+      // Cria um <span> só para o texto (facilita aplicar o "riscado")
+      const spanTexto = document.createElement("span");
+      spanTexto.textContent = texto;
+
+      // Ao clicar no texto, alterna entre concluída / não concluída
+      spanTexto.addEventListener("click", () => {
+        item.classList.toggle("concluida");
+        atualizarContador();
+      });
+
+      // Cria o botão de remover
+      const botaoRemover = document.createElement("button");
+      botaoRemover.textContent = "Remover";
+      botaoRemover.classList.add("btn-remover");
+
+      // Ao clicar em remover, tira o <li> da lista e atualiza o contador
+      botaoRemover.addEventListener("click", () => {
+        item.remove();
+        atualizarContador();
+      });
+
+      // Monta a estrutura: <li><span>texto</span><button>Remover</button></li>
+      item.appendChild(spanTexto);
+      item.appendChild(botaoRemover);
+
+      return item;
+    }
+
+    // ===== 4. FUNÇÃO PARA ADICIONAR UMA NOVA TAREFA =====
+    function adicionarTarefa() {
+      const texto = campo.value.trim(); // remove espaços em branco extras
+
+      // Não adiciona tarefa vazia
+      if (texto === "") {
+        campo.focus();
+        return;
+      }
+
+      const novoItem = criarItemTarefa(texto);
+      lista.appendChild(novoItem);
+
+      // Limpa o campo e devolve o foco para ele, pronto para digitar a próxima
+      campo.value = "";
+      campo.focus();
+
+      atualizarContador();
+    }
+
+    // ===== 5. EVENTOS =====
+
+    // Clique no botão "Adicionar"
+    botaoAdicionar.addEventListener("click", adicionarTarefa);
+
+    // Também permite adicionar apertando "Enter" dentro do campo de texto
+    campo.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        adicionarTarefa();
+      }
+    });
+
+    // ===== 6. TAREFAS INICIAIS (opcional, só para já ter algo na tela) =====
+    ["Estudar DOM", "Praticar JavaScript"].forEach((texto) => {
+      lista.appendChild(criarItemTarefa(texto));
+    });
+    atualizarContador();
+  </script>
+
+</body>
+
+</html>

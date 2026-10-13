@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Snake</title>
+  <style>
+    body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; flex-direction: column; }
+    canvas { border: 2px solid #00ff41; box-shadow: 0 0 20px #00ff4140; }
+    #score { color: #00ff41; font-family: monospace; font-size: 20px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div id="score">SCORE: 0</div>
+  <canvas id="c" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const CELL = 20;
+    const COLS = canvas.width / CELL;
+    const ROWS = canvas.height / CELL;
+
+    let snake = [{x: 10, y: 10}];
+    let dir = {x: 1, y: 0};
+    let food = spawnFood();
+    let score = 0;
+    let gameOver = false;
+
+    function spawnFood() {
+      return { x: Math.floor(Math.random() * COLS), y: Math.floor(Math.random() * ROWS) };
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowUp' && dir.y === 0) dir = {x: 0, y: -1};
+      if (e.key === 'ArrowDown' && dir.y === 0) dir = {x: 0, y: 1};
+      if (e.key === 'ArrowLeft' && dir.x === 0) dir = {x: -1, y: 0};
+      if (e.key === 'ArrowRight' && dir.x === 0) dir = {x: 1, y: 0};
+      if (e.key === ' ' && gameOver) { snake = [{x:10,y:10}]; dir={x:1,y:0}; score=0; gameOver=false; }
+    });
+
+    function update() {
+      if (gameOver) return;
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) { gameOver = true; return; }
+      if (snake.some(s => s.x === head.x && s.y === head.y)) { gameOver = true; return; }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        document.getElementById('score').textContent = 'SCORE: ' + score;
+        food = spawnFood();
+      } else {
+        snake.pop();
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#00ff4108';
+      for (let i = 0; i < COLS; i++) {
+        ctx.beginPath(); ctx.moveTo(i*CELL, 0); ctx.lineTo(i*CELL, canvas.height); ctx.stroke();
+      }
+      ctx.fillStyle = '#ff4136';
+      ctx.fillRect(food.x*CELL+2, food.y*CELL+2, CELL-4, CELL-4);
+      snake.forEach((s, i) => {
+        ctx.fillStyle = i === 0 ? '#00ff41' : '#00cc33';
+        ctx.fillRect(s.x*CELL+1, s.y*CELL+1, CELL-2, CELL-2);
+      });
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00ff41';
+        ctx.font = 'bold 32px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 20);
+        ctx.font = '16px monospace';
+        ctx.fillText('SPACE para reiniciar', canvas.width/2, canvas.height/2 + 20);
+      }
+    }
+
+    setInterval(() => { update(); draw(); }, 120);
+  </script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Exemplo de React - Lista de Tarefas</title>
+
+  <!-- 
+    Em um projeto real, você instalaria o React com npm e usaria
+    um "bundler" (Vite, Create React App etc.). Aqui, para fins
+    didáticos, carregamos tudo direto via CDN, incluindo o Babel,
+    que traduz a sintaxe JSX (o "HTML dentro do JavaScript") para
+    JavaScript puro no próprio navegador.
+  -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      color: #1f3864;
+    }
+
+    .form-tarefa {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    #campo-tarefa,
+    .form-tarefa input {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background: #1f3864;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 10px;
+      margin-bottom: 6px;
+      border-radius: 4px;
+    }
+
+    .concluida {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .btn-remover {
+      background: #c0392b;
+      padding: 4px 10px;
+    }
+
+    #contador {
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 
+    Esta é a ÚNICA parte onde tocamos o DOM "na mão".
+    É uma div vazia; todo o resto da página será
+    desenhado pelo React dentro dela.
+  -->
+  <div id="raiz"></div>
+
+  <!-- type="text/babel" avisa ao Babel para traduzir este script -->
+  <script type="text/babel">
+
+    // ===========================================================
+    // COMPARANDO COM O DOM "PURO"
+    //
+    // No exemplo anterior (JavaScript puro), nós mesmos:
+    //   1. Chamávamos document.createElement() para criar cada <li>
+    //   2. Chamávamos appendChild() para inserir na página
+    //   3. Chamávamos item.remove() para tirar da página
+    //   4. Chamávamos classList.toggle() para mudar a aparência
+    //
+    // Em React, você NÃO manipula o DOM diretamente. Em vez disso:
+    //   1. Você guarda os dados em uma "variável de estado" (useState)
+    //   2. Você descreve como a tela DEVE ficar, baseado nesses dados
+    //   3. Quando os dados mudam, o React recalcula sozinho
+    //      quais partes do DOM precisam ser atualizadas
+    //
+    // Ou seja: você pensa em "dados" -> React pensa em "DOM" por você.
+    // ===========================================================
+
+    // useState é uma "hook" do React: guarda um valor que,
+    // quando alterado, faz o componente ser redesenhado automaticamente
+    const { useState } = React;
+
+    function ListaDeTarefas() {
+      // "tarefas" é o valor atual (um array de objetos)
+      // "setTarefas" é a função usada para ALTERAR esse valor
+      const [tarefas, setTarefas] = useState([
+        { id: 1, texto: "Estudar DOM", concluida: false },
+        { id: 2, texto: "Estudar React", concluida: false },
+      ]);
+
+      // Guarda o texto digitado no campo de input
+      const [textoNovo, setTextoNovo] = useState("");
+
+      // Função chamada ao clicar em "Adicionar" ou apertar Enter
+      function adicionarTarefa() {
+        const texto = textoNovo.trim();
+        if (texto === "") return;
+
+        // IMPORTANTE: nunca alteramos "tarefas" diretamente (ex.: tarefas.push()).
+        // Em vez disso, criamos um NOVO array e passamos para setTarefas.
+        // É esse "novo array" que avisa ao React que algo mudou.
+        const novaTarefa = { id: Date.now(), texto, concluida: false };
+        setTarefas([...tarefas, novaTarefa]);
+
+        setTextoNovo(""); // limpa o campo de texto
+      }
+
+      // Alterna concluída/não concluída de uma tarefa específica
+      function alternarConcluida(id) {
+        const tarefasAtualizadas = tarefas.map((tarefa) => {
+          if (tarefa.id === id) {
+            // devolve uma cópia da tarefa com "concluida" invertido
+            return { ...tarefa, concluida: !tarefa.concluida };
+          }
+          return tarefa; // as demais tarefas continuam iguais
+        });
+        setTarefas(tarefasAtualizadas);
+      }
+
+      // Remove uma tarefa da lista
+      function removerTarefa(id) {
+        // filter() devolve um novo array SEM a tarefa com esse id
+        setTarefas(tarefas.filter((tarefa) => tarefa.id !== id));
+      }
+
+      // Calcula quantas tarefas ainda estão pendentes
+      const pendentes = tarefas.filter((t) => !t.concluida).length;
+
+      // -----------------------------------------------------------
+      // A partir daqui é JSX: parece HTML, mas é JavaScript.
+      // Repare que usamos {chaves} para inserir valores/expressões
+      // e que o array "tarefas" é transformado em elementos <li>
+      // usando .map() — não existe um "appendChild" em lugar nenhum.
+      // -----------------------------------------------------------
+      return (
+        <div>
+          <h1>Minha Lista de Tarefas (React)</h1>
+
+          <div className="form-tarefa">
+            <input
+              type="text"
+              placeholder="Digite uma nova tarefa..."
+              value={textoNovo}
+              // A cada tecla digitada, atualizamos o estado "textoNovo"
+              onChange={(evento) => setTextoNovo(evento.target.value)}
+              onKeyUp={(evento) => {
+                if (evento.key === "Enter") adicionarTarefa();
+              }}
+            />
+            <button onClick={adicionarTarefa}>Adicionar</button>
+          </div>
+
+          <p id="contador">
+            {pendentes} tarefa(s) pendente(s) de {tarefas.length} no total
+          </p>
+
+          <ul>
+            {/* .map() transforma cada objeto "tarefa" em um <li> */}
+            {tarefas.map((tarefa) => (
+              <li key={tarefa.id}>
+                <span
+                  className={tarefa.concluida ? "concluida" : ""}
+                  onClick={() => alternarConcluida(tarefa.id)}
+                >
+                  {tarefa.texto}
+                </span>
+                <button
+                  className="btn-remover"
+                  onClick={() => removerTarefa(tarefa.id)}
+                >
+                  Remover
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    // ===========================================================
+    // Por fim, "montamos" o componente dentro da div#raiz.
+    // Esta é a única linha parecida com o que fazíamos antes
+    // (document.getElementById) — o resto, o React cuida sozinho.
+    // ===========================================================
+    const raiz = ReactDOM.createRoot(document.getElementById("raiz"));
+    raiz.render(<ListaDeTarefas />);
+
+  </script>
+
+</body>
+
+</html>

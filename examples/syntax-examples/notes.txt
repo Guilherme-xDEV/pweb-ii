@@ -1,0 +1,127 @@
+tipos de dados em javascript:
+String, Number, Bigint, Boolean, Undefined, Null, Symbol, Object
+
+Undefined: variável existe mas não tem valor definido.
+Null: representa um valor nulo, sua diferença em relação ao Undefined é que o programador decide que aquele variável não terá um valor válido.
+
+O valor nulo é uma forma de atribuir que algo não é valido no programa. O nulo pode ser usado para realizar verificações no código
+por exemplo: a chamada à uma API retorna um campo nulo indica que não houver retorno válido.
+
+Symbol: um tipo específico da linguagem que permite criar um tipo exclusivo na linguagem. em JavaScript, criado principalmente para 
+evitar colisões de nomes em propriedades de objetos. 
+
+Object
+Exemplos de objetos são: estrutura de aray, classe date para trabalhar com hora, Function para criar funções. Estrutura de Array no js é um objeto, Date, Function
+
+Maneira que variáveis são declaradas em JS: var, let ou const.
+let permite alteração de referência.
+const não permite mudança, ou seja não é possível realizar.
+
+Não confundir valor com referência. O que é armazenado em uma variável de tipo primitivo é o valor daquela variável.
+exemplo: let idade = 20. O valor é diretamente referenciado pela variável.
+
+Ao trabalhar com uma array, que é um objeto, temos um comportamento diferente. O tipo não é primitivo.
+O que é armazenado na variável na verdade é uma referência.
+
+A estrutura fica organizada na memória, um espaço alocado para todos os elementos e divididos.
+
+let array = [5, 4, 11, 23]
+
+isso implica no comportamento da imutabilidade do const!
+
+observe que:
+
+const = numeros = [5, 4, 11, 23]
+numeros[0] = 10; funciona!
+
+isso acontece porque a imutabilidade no javascript é dado por referência. Mas aqui não estamos atribuindo na referência. A área de memória
+ocupada pela array na memória continua a mesma! ela (a estrutua) não se alterou.
+
+Um tipo primitivo, contrariamente, pode ser localizado em qualquer lugar da memória! logo, ao tentar reatribuir um tipo primitivo definido com const,
+estaríamos mudando a referência da memória.
+
+um exemplo do que não podria funcionar:
+se reatribuíssimos a referência da array numeros:
+numeros = [4, 8, 12, 5]
+
+Por causa desse comportamento o const é mais eficiente que o let em termos de otmizacão de memória. O interpretador, precisa fazer verificações extras.
+
+recomendação: para tipos de dados não primitivos, use const!
+
+Características Gerais do JS:
+Tipagem Dinâmica -> O tipo é definido em tempo de execução.
+Tipagem Fraca -> permite misturar os tipos
+
+exemplo: "5" + 3 = "53"
+mas
+5 - "3" = 2 -> a coerção tende para int
+
+javascipt faz uma coerção, é uma operação forçada.
+
+C por exemplo é fracamente tipada mesmo sendo estaticamente.
+O compilador faz convresões
+
+O pyhton é dinamicamente tipado mas fortemente tipado.
+
+Todo número é armazenado no padrão 64.
+
+Comparação de valores
+
+== versus ===
+
+qual a diferênça?
+
+== é a igulade solta, compara somente tipo.
+=== é a igualdade estrita, ela compara se o valor e o tipo são iguais.
+
+funções nativas para conversão de tipo: Number(), String(), Boolean()
+
+for (key in object) {
+
+    // em um objeto, permite percorrer todos os atibutos, um por vez, na iteração.
+    // exemplo: objeto pessoa, retorna atributos.
+}
+
+const cat = {brand: "Fiat", model:"Toro", year:2024};
+
+for (let p in car) {
+    console.log(p);
+}
+
+// for of - usado para arrays ou iteráveis / laços
+
+objeto -> entre chaves, array -> colchetes
+
+tradicional:
+
+for (let i = 0; i < cars.length; i++) { }
+
+
+const cars = ["fiat", "ford", "toyota"]
+for (let x of cars) {
+    console.log(x)
+}
+
+async vs defer:
+o async carrega o script e ao mesmo tempo continua a renderização da página de maneria asyncrona
+isso pode não ser seguro.
+
+O defer já carrega o js mas só executa no final.
+
+----------
+
+13/10 - funções em javascript
+Uma função em JS é um 'cidadão de primeira classe', isso significa que podemos colocá-la em 
+diferentes locais do código: uma função pode ser parâmetro de outra, uma função pode retornar outra,
+atribuição de uma variável à uma função, etc.
+
+expressão de função: cria uma função anônima. Perceba que não temos o nome da função declarada.
+const x = function(p1, p2) (return p1 * p2);
+let z = x(4, 3);
+
+essa é uma função anônima.
+O const é usado para dizer que não iremos reatribuir a variável, ela é especial para aramazenar a 
+definição da função.
+
+função timeout em javascript:
+uma função que realiza algo após uma certa passagem de tempo

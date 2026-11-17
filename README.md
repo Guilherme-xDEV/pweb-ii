@@ -59,6 +59,6 @@ comerciais;
 
 * Listas de exercícios são encontradas no diretório 'atividades'.
 </br>
-[atividades](./atividades/)
+![atividades](./atividades/)
 
 cada lista tem um README.md com as questões teóricas.

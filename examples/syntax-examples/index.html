@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World JS</title>
+</head>
+
+<body>
+
+    <h2 id="titulo"> Título </h2>
+    <h3 style="padding: 4px; text-decoration: red" onclick="alert('Teste')">Clique para disparar alerta</h3> <!-- script dentro de tag -->
+    
+    <!-- script interno por tag -->
+    <script>
+        console.log("Hello World JS");
+    </script>
+
+    <!-- referência por link a script externo -->
+    <script src="./index.js"></script>
+
+    <p id="demo"></p>
+
+    <script>
+
+        document.getElementById("demo").innerHTML = "Texto injetado por JavaScript."
+        let demoElement = document.getElementById("demo")
+        setTimeout(() => demoElement.textContent = "parágrafo mudado após 5 segundos", 5000);
+
+    </script>
+
+    <button onclick="console.log(`JS na tag!`)">Clique aqui!</button>
+
+    <!-- uso de async e defer carregamento controlado -->
+
+    <script async src="js/vendor/jquery.js"></script>
+    <script async src="js/myScript.js"></script>
+    
+</body>
+
+</html>

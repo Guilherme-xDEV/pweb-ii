@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JS Quest: combate com JavaScript</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#eaeef5;--fg:#171923;--panel:#fff;--line:#cdd4e2;--muted:#5b6377;
+  --accent:#3f4fd1;--accent-fg:#fff;--ok:#1f7a3a;--bad:#b42323;--code:#f0f3f9;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12141c;--fg:#e8eaf2;--panel:#1c1f2b;--line:#323750;--muted:#9aa1b8;
+    --accent:#8fa0ff;--accent-fg:#101226;--ok:#6fdc8c;--bad:#ff8c8c;--code:#141622;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12141c;--fg:#e8eaf2;--panel:#1c1f2b;--line:#323750;--muted:#9aa1b8;
+  --accent:#8fa0ff;--accent-fg:#101226;--ok:#6fdc8c;--bad:#ff8c8c;--code:#141622;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.game{max-width:760px;margin:0 auto;padding:14px 12px 28px}
+.hud{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;margin:0 2px 8px}
+.hud span:last-child{color:var(--muted);font-weight:600}
+
+/* cena */
+.scene{position:relative;overflow:hidden;isolation:isolate;height:clamp(230px,54vw,300px);border-radius:16px;border:1px solid var(--line)}
+.strip{position:absolute;inset:0 auto 0 0;width:200%;display:flex}
+.terrain{position:relative;flex:1;background:linear-gradient(var(--s1),var(--s2))}
+.ground{position:absolute;left:0;right:0;bottom:0;height:56px;background:var(--g);border-top:4px solid rgba(0,0,0,.2)}
+.decor{position:absolute;left:0;right:0;bottom:50px;display:flex;justify-content:space-between;padding:0 4%;font-size:clamp(40px,10vw,60px);line-height:1}
+.sky{position:absolute;top:14px;left:58%;font-size:34px;font-style:normal;opacity:.85}
+.hero,.enemy{position:absolute;bottom:44px;line-height:1;font-size:clamp(46px,12vw,68px);z-index:2}
+.hero{left:12%}
+.enemy{right:12%;opacity:0;transform:scaleX(-1)}
+.fx{position:absolute;z-index:3;line-height:1;pointer-events:none}
+.bolt{font-size:34px;bottom:84px;animation:fly .7s ease-in forwards}
+.boom{font-size:64px;bottom:60px;animation:boom .6s ease-out forwards}
+.star{font-size:22px;bottom:50px;animation:rise 1.3s ease-out forwards}
+.banner{left:50%;top:22%;white-space:nowrap;font-weight:900;font-size:clamp(28px,8vw,52px);letter-spacing:.04em;text-shadow:0 3px 0 rgba(0,0,0,.4);animation:pop .5s cubic-bezier(.2,1.6,.4,1) both}
+.banner.win{color:#ffe066}
+.banner.lose{color:#ff7a7a}
+
+.hero.bob{animation:bob .32s ease-in-out infinite}
+.hero.cast{animation:cast .5s ease-out}
+.hero.jump{animation:jump .5s ease-out 2}
+.hero.down{animation:down .6s ease-in forwards}
+.enemy.in{animation:enter .6s ease-out forwards}
+.enemy.die{animation:die .7s ease-in forwards}
+.enemy.strike{animation:strike 1s ease-in-out both}
+.scene.shake{animation:shake .4s}
+
+@keyframes bob{50%{transform:translateY(-9px)}}
+@keyframes cast{50%{transform:scale(1.18)}}
+@keyframes jump{45%{transform:translateY(-30px)}}
+@keyframes down{to{transform:rotate(-90deg) translateX(-14px);filter:grayscale(1);opacity:.7}}
+@keyframes enter{from{opacity:0;transform:translateX(120px) scaleX(-1)}to{opacity:1;transform:scaleX(-1)}}
+@keyframes die{0%{opacity:1;transform:scaleX(-1)}30%{transform:scaleX(-1.2) scaleY(1.2) rotate(8deg)}100%{opacity:0;transform:scaleX(-.2) scaleY(.2) rotate(40deg)}}
+@keyframes strike{0%{opacity:1;transform:scaleX(-1)}35%,55%{opacity:1;transform:translateX(calc(var(--s) * -1)) scaleX(-1)}100%{opacity:1;transform:scaleX(-1)}}
+@keyframes fly{to{transform:translateX(var(--d))}}
+@keyframes boom{from{transform:scale(.3);opacity:1}to{transform:scale(1.5);opacity:0}}
+@keyframes rise{to{transform:translateY(-200px) rotate(200deg);opacity:0}}
+@keyframes pop{from{transform:translateX(-50%) scale(.2);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.banner{transform:translateX(-50%)}
+
+/* painel */
+.panel{margin-top:12px;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.panel h2{margin:8px 0 4px;font-size:1.15rem;line-height:1.35}
+.panel p{margin:0 0 12px}
+.say{font-size:1.02rem}
+.ok-t{color:var(--ok)}.bad-t{color:var(--bad)}
+.tag{display:inline-block;padding:2px 10px;border:1px solid var(--line);border-radius:99px;font-size:.82rem;color:var(--muted);font-weight:600}
+pre{margin:10px 0;padding:12px;background:var(--code);border:1px solid var(--line);border-radius:10px;overflow-x:auto;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}
+.btn{min-height:46px;padding:10px 20px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-fg);font:700 1rem system-ui,sans-serif;cursor:pointer}
+.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{display:flex;gap:12px;align-items:center;width:100%;min-height:46px;padding:9px 12px;text-align:left;background:var(--bg);color:var(--fg);border:2px solid var(--line);border-radius:10px;font-size:14px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt b{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--line);font-size:.8rem}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:rgba(31,122,58,.16)}
+.opt.bad{border-color:var(--bad);background:rgba(180,35,35,.16)}
+@media (prefers-reduced-motion:reduce){.hero.bob,.hero.jump,.scene.shake{animation:none}.strip{transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<main class="game">
+  <div class="hud" id="hud"></div>
+  <div class="scene" id="scene">
+    <div class="strip" id="strip"></div>
+    <div class="hero" id="hero">🧙‍♂️</div>
+    <div class="enemy" id="enemy"></div>
+  </div>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</main>
+
+<script>
+/* ---------- Dados: perguntas e terrenos (uma por fase) ---------- */
+const QUESTIONS = [
+  { t: "Arrow function",
+    q: "Qual opção reescreve esta função como arrow function?",
+    c: `function dobro(n) {\n  return n * 2;\n}`,
+    o: ["const dobro = n => n * 2;", "const dobro = n -> n * 2;", "const dobro = (n) = { n * 2 };", "dobro => (n) { return n * 2 }"],
+    a: 0,
+    w: "A seta é =>. Com uma única expressão, o return é implícito e as chaves podem ser omitidas." },
+  { t: "let e const",
+    q: "O que acontece ao executar este código?",
+    c: `const nome = "Ana";\nnome = "Bia";\nconsole.log(nome);`,
+    o: ["Imprime Bia", "Imprime Ana", "Lança TypeError: Assignment to constant variable", "Imprime undefined"],
+    a: 2,
+    w: "const não permite reatribuir a variável. Tentar atribuir outro valor lança um TypeError." },
+  { t: "Promise",
+    q: "Qual é a ordem de saída no console?",
+    c: `const p = new Promise((resolve) => {\n  resolve("ok");\n});\np.then(v => console.log(v));\nconsole.log("fim");`,
+    o: ["ok, depois fim", "fim, depois ok", "Só ok", "Só fim"],
+    a: 1,
+    w: "O callback do .then roda como microtarefa, depois que o código síncrono termina. Por isso “fim” sai primeiro." },
+  { t: "Array.map",
+    q: "O que este código exibe?",
+    c: `const nums = [1, 2, 3];\nconst r = nums.map(n => n * 10);\nconsole.log(r, nums);`,
+    o: ["[10, 20, 30] [1, 2, 3]", "[10, 20, 30] [10, 20, 30]", "[1, 2, 3] [10, 20, 30]", "undefined [1, 2, 3]"],
+    a: 0,
+    w: "map devolve um novo array com os valores transformados e não altera o original." },
+  { t: "Desestruturação",
+    q: "O que este código exibe?",
+    c: `const user = { nome: "Lia", idade: 21 };\nconst { nome, idade: anos } = user;\nconsole.log(nome, anos);`,
+    o: ["Lia 21", "Lia undefined", "undefined 21", "Erro de sintaxe"],
+    a: 0,
+    w: "Em { idade: anos }, a propriedade idade é lida e guardada na variável anos." },
+  { t: "async e await",
+    q: "O que o console.log exibe?",
+    c: `async function f() {\n  return 5;\n}\nconst r = f();\nconsole.log(r);`,
+    o: ["O número 5", "Uma Promise, e não o número 5", "undefined", "Lança um erro"],
+    a: 1,
+    w: "Uma função async sempre devolve uma Promise. Use await ou .then para obter o valor 5." }
+];
+
+const TERRAINS = [
+  { n: "Floresta encantada", s: ["#8ed1fc", "#dff4ff"], g: "#4c9a2a", d: ["🌲", "🌳", "🌲"], k: "☁️", e: "👺", en: "O goblin da floresta" },
+  { n: "Deserto seco", s: ["#ffcf8a", "#fff2d4"], g: "#d9a94f", d: ["🌵", "🏜️", "🌵"], k: "☀️", e: "🦂", en: "O escorpião gigante" },
+  { n: "Caverna sombria", s: ["#23233a", "#4a4a68"], g: "#4a4a5e", d: ["🪨", "🍄", "🪨"], k: "🦇", e: "🕷️", en: "A aranha das cavernas" },
+  { n: "Montanha gelada", s: ["#bfe0ff", "#f4faff"], g: "#eef4fa", d: ["🌲", "⛄", "🌲"], k: "❄️", e: "🐺", en: "O lobo branco" },
+  { n: "Pântano nebuloso", s: ["#93a883", "#cbd8b8"], g: "#56673a", d: ["🌿", "🪵", "🌿"], k: "🌫️", e: "🐊", en: "O crocodilo do pântano" },
+  { n: "Vulcão em chamas", s: ["#ff6a45", "#ffb870"], g: "#3a2420", d: ["🌋", "🔥", "🌋"], k: "☄️", e: "🐉", en: "O dragão de fogo" }
+];
+
+/* ---------- Estado e atalhos ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const scene = $("#scene"), strip = $("#strip"), hero = $("#hero"), enemy = $("#enemy"), panel = $("#panel"), hud = $("#hud");
+let phase = 0, wins = 0, cur = null, locked = false;
+
+const terrain = t => `<div class="terrain" style="--s1:${t.s[0]};--s2:${t.s[1]};--g:${t.g}"><i class="sky">${t.k}</i><div class="decor">${t.d.map(e => `<span>${e}</span>`).join("")}</div><div class="ground"></div></div>`;
+const setWorld = (a, b) => { strip.innerHTML = terrain(a) + terrain(b); };
+const show = h => { panel.innerHTML = h; };
+const updateHud = () => { hud.innerHTML = `<span>Fase ${phase + 1} de ${TERRAINS.length}: ${TERRAINS[phase].n}</span><span>Vitórias: ${wins}</span>`; };
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+function fx(cls, html, left, delay) {
+  const e = document.createElement("div");
+  e.className = "fx " + cls;
+  e.innerHTML = html;
+  if (left != null) e.style.left = left + "px";
+  if (delay) e.style.animationDelay = delay + "s";
+  scene.appendChild(e);
+  setTimeout(() => e.remove(), 2400);
+}
+const clearFx = () => scene.querySelectorAll(".fx").forEach(e => e.remove());
+const gap = () => enemy.offsetLeft - hero.offsetLeft - hero.offsetWidth;
+
+/* ---------- Fluxo do jogo ---------- */
+function intro() {
+  updateHud();
+  show(`<h2>⚔️ JS Quest</h2>
+    <p>Monstros bloqueiam o caminho. Para vencer cada um, responda a uma pergunta de JavaScript. Acertou: seu feitiço derrota o monstro e você segue para o próximo terreno. Errou: o monstro ataca, mas você pode tentar de novo.</p>
+    <button class="btn" data-a="encounter">Iniciar aventura</button>`);
+}
+
+function encounter() {
+  const t = TERRAINS[phase];
+  clearFx();
+  updateHud();
+  scene.classList.remove("shake");
+  hero.className = "hero";
+  enemy.textContent = t.e;
+  enemy.className = "enemy in";
+  show(`<p class="say"><b>${t.en}</b> bloqueia o caminho!</p><button class="btn" data-a="fight">⚔️ Combater</button>`);
+}
+
+function fight() {
+  const q = QUESTIONS[phase];
+  const order = shuffle(q.o.map((_, i) => i));
+  cur = q; locked = false;
+  show(`<span class="tag">${q.t}</span>
+    <h2>${q.q}</h2>
+    <pre><code>${esc(q.c)}</code></pre>
+    <div class="opts">${order.map((oi, k) => `<button class="opt" data-a="pick" data-i="${oi}"><b>${"ABCD"[k]}</b><code>${esc(q.o[oi])}</code></button>`).join("")}</div>`);
+}
+
+function pick(b) {
+  if (locked) return;
+  locked = true;
+  const ok = +b.dataset.i === cur.a;
+  panel.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.i === cur.a) x.classList.add("ok"); });
+  if (!ok) b.classList.add("bad");
+  setTimeout(ok ? win : lose, 700);
+}
+
+function win() {
+  wins++; updateHud();
+  const start = hero.offsetLeft + hero.offsetWidth - 10;
+  scene.style.setProperty("--d", (enemy.offsetLeft - start + 24) + "px");
+  hero.className = "hero cast";
+  fx("bolt", "✨", start);
+  setTimeout(() => {
+    enemy.className = "enemy die";
+    fx("boom", "💥", enemy.offsetLeft);
+    hero.className = "hero jump";
+    fx("banner win", "VITÓRIA!");
+    for (let i = 0; i < 8; i++) fx("star", "⭐", Math.random() * scene.clientWidth, i * 0.06);
+  }, 700);
+  setTimeout(() => {
+    const last = phase === TERRAINS.length - 1;
+    show(`<p class="say ok-t"><b>Resposta certa!</b> ${cur.w}</p>` + (last
+      ? `<h2>🏆 Jornada concluída</h2><p>Você derrotou todos os monstros e fez ${wins} de ${TERRAINS.length} vitórias.</p><button class="btn" data-a="again">Jogar de novo</button>`
+      : `<button class="btn" data-a="next">Avançar para ${TERRAINS[phase + 1].n}</button>`));
+  }, 1700);
+}
+
+function lose() {
+  scene.style.setProperty("--s", Math.max(gap() - 4, 40) + "px");
+  enemy.className = "enemy strike";
+  setTimeout(() => {
+    hero.className = "hero down";
+    fx("banner lose", "DERROTA");
+    scene.classList.add("shake");
+  }, 450);
+  setTimeout(() => {
+    show(`<p class="say bad-t"><b>Não foi dessa vez.</b> ${cur.w}</p><button class="btn" data-a="retry">Tentar de novo</button>`);
+  }, 1500);
+}
+
+function retry() {
+  clearFx();
+  scene.classList.remove("shake");
+  hero.className = "hero";
+  enemy.className = "enemy in";
+  fight();
+}
+
+function next() {
+  const a = TERRAINS[phase], b = TERRAINS[phase + 1];
+  clearFx();
+  enemy.className = "enemy";
+  hero.className = "hero bob";
+  show(`<p class="say">Caminhando rumo a ${b.n}…</p>`);
+  setWorld(a, b);
+  strip.style.transition = "none";
+  strip.style.transform = "translateX(0)";
+  strip.offsetWidth;
+  strip.style.transition = "transform 2.6s linear";
+  strip.style.transform = "translateX(-50%)";
+  setTimeout(() => {
+    phase++;
+    strip.style.transition = "none";
+    setWorld(b, b);
+    strip.style.transform = "translateX(0)";
+    encounter();
+  }, 2700);
+}
+
+function again() {
+  phase = 0; wins = 0;
+  setWorld(TERRAINS[0], TERRAINS[0]);
+  enemy.className = "enemy";
+  encounter();
+}
+
+const ACTIONS = { encounter, fight, pick, next, retry, again };
+panel.addEventListener("click", e => {
+  const b = e.target.closest("[data-a]");
+  if (b && ACTIONS[b.dataset.a]) ACTIONS[b.dataset.a](b);
+});
+
+setWorld(TERRAINS[0], TERRAINS[0]);
+intro();
+</script>
+</body>
+</html>
